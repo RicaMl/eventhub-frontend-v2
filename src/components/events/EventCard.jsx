@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
+import { truncateText } from "../../utils/string";
 import "../../css/EventCard.css";
 
 const STATUS_MAP = {
   upcoming: { label_fr: "À venir", label_en: "Upcoming", class: "badge-accent" },
   ongoing:  { label_fr: "En cours", label_en: "Ongoing",  class: "badge-success" },
-  past:     { label_fr: "Passé",    label_en: "Past",     class: "badge-muted" },
-  completed: { label_fr: "Terminé",  label_en: "Completed", class: "badge-muted" },
+  completed: { label_fr: "Terminé", label_en: "Completed", class: "badge-muted" },
   cancelled: { label_fr: "Annulé",   label_en: "Cancelled", class: "badge-danger" },
 };
 
@@ -28,14 +28,20 @@ export default function EventCard({ event }) {
   return (
     <article className="event-card animate-fade" onClick={() => navigate(`/events/${event.id}`)}>
       {/* Image */}
-      <div className="ec-image">
+      <figure className="ec-image">
         {event.image_url ? (
-          <img src={event.image_url} alt={event.title} loading="lazy" />
+          <img 
+            src={event.image_url} 
+            alt={event.title} 
+            loading="lazy"
+            decoding="async"
+          />
         ) : (
-          <div className="ec-image-placeholder">
+          <div className="ec-image-placeholder" aria-hidden="true">
             <span>{event.title?.[0] || "E"}</span>
           </div>
         )}
+        <figcaption className="sr-only">{event.title}</figcaption>
         <div className="ec-badges">
           <span className={`badge ${status.class}`}>
             {lang === "fr" ? status.label_fr : status.label_en}
@@ -46,38 +52,39 @@ export default function EventCard({ event }) {
             <span className="badge badge-muted">{event.price}€</span>
           )}
         </div>
-      </div>
+      </figure>
 
       {/* Content */}
       <div className="ec-body">
-        <h3 className="ec-title">{event.title}</h3>
-        <p className="ec-description">{event.description}</p>
+        <h3 className="ec-title">{truncateText(event.title, 40)}</h3>
+        <p className="ec-description">{truncateText(event.description, 50)}</p>
 
-        <div className="ec-meta">
-          <div className="ec-meta-item">
-            <span className="meta-icon">📅</span>
+        {/* Meta informations */}
+        <ul className="ec-meta" aria-label="Informations sur l'événement">
+          <li className="ec-meta-item">
+            <span className="meta-icon" aria-hidden="true">📅</span>
             <span>{formatDate(event.start_date)}</span>
-          </div>
-          <div className="ec-meta-item">
-            <span className="meta-icon">📍</span>
-            <span>{event.city || event.country || event.address || "—"}</span>
-          </div>
-          <div className="ec-meta-item">
-            <span className="meta-icon">👥</span>
+          </li>
+          <li className="ec-meta-item">
+            <span className="meta-icon" aria-hidden="true">📍</span>
+            <span>{event.location || "—"}</span>
+          </li>
+          <li className="ec-meta-item">
+            <span className="meta-icon" aria-hidden="true">👥</span>
             <span>
-              {event.registered_count || 0}/{event.max_participants || "∞"}{" "}
+              {event.registered_count || 0}/{event.max_participants || "∞"}
               {!isFull && spotsLeft > 0 && (
-                <span style={{ color: "var(--success)", fontSize: 12 }}>
+                <span className="spots-left" aria-label={`${spotsLeft} places restantes`}>
                   ({spotsLeft} {t("events.spotsLeft")})
                 </span>
               )}
             </span>
-          </div>
-        </div>
+          </li>
+        </ul>
 
         {/* Spots bar */}
         {event.max_participants && (
-          <div className="spots-bar">
+          <div className="spots-bar" role="progressbar" aria-label="Taux de remplissage" aria-valuenow={Math.min(100, ((event.registered_count || 0) / event.max_participants) * 100)} aria-valuemin="0" aria-valuemax="100">
             <div
               className="spots-fill"
               style={{
@@ -88,12 +95,12 @@ export default function EventCard({ event }) {
           </div>
         )}
 
-        {/* Actions - seulement le bouton Voir détails */}
+        {/* Actions */}
         <div className="ec-actions">
           <button
             className="btn btn-primary"
-            style={{ flex: 1, fontSize: 13 }}
             onClick={(e) => { e.stopPropagation(); navigate(`/events/${event.id}`); }}
+            aria-label={`Voir les détails de ${event.title}`}
           >
             {t("events.seeDetails")}
           </button>

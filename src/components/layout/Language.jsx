@@ -10,12 +10,3 @@ export default function Language() {
     </button>
   );
 }
-
-
-// const {,  lang, toggleLang, } = useApp();
-
-//   return (
-//         <button className="icon-btn" onClick={toggleLang} title="Toggle language">
-//             <span className="lang-flag">{lang === "fr" ? "🇫🇷" : "🇬🇧"}</span>
-//         </button>
-//   );

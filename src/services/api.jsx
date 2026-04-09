@@ -112,6 +112,9 @@ export const registrationService = {
   unregister: (registrationId) =>
     api.delete(`/registrations/${registrationId}/`).then((r) => r.data),
 
+  unregisterByEvent: (eventId) =>
+    api.delete(`/registrations/by-event/?event_id=${eventId}`).then((r) => r.data),
+
   getMyRegistrations: () =>
     api.get("/registrations/my/").then((r) => r.data),
 };

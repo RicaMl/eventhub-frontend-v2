@@ -4,7 +4,7 @@ import { eventService } from "../../services/api";
 import EventCard from "../../components/events/EventCard";
 import "../../css/Events.css";
 
-const STATUSES = ["all", "upcoming", "ongoing", "past"];
+const STATUSES = ["all", "upcoming", "ongoing", "completed"];
 
 export default function Events() {
   const { t, lang } = useApp();

@@ -10,6 +10,7 @@ export const translations = {
       dashboard: "Dashboard",
       profile: "Mon profil",
       user: "Utilisateur",
+      myEvents: "Mes événements",
     },
     profile: {
     edit: "Modifier mon profil",
@@ -33,6 +34,16 @@ export const translations = {
       noAccount: "Pas encore de compte ?",
       hasAccount: "Déjà un compte ?",
       forgotPassword: "Mot de passe oublié ?",
+    },
+
+    myEvents: {
+      title: "Mes événements",
+      subtitle: "Les événements auxquels vous participez",
+      loginRequired: "Connexion requise",
+      loginRequiredDesc: "Veuillez vous connecter pour voir vos événements.",
+      eventsFound: "événement(s)",
+      noEvents: "Vous ne participez à aucun événement",
+      noEventsDesc: "Explorez les événements disponibles et inscrivez-vous !"
     },
 
     password: {
@@ -245,6 +256,7 @@ export const translations = {
       dashboard: "Dashboard",
       profile: "My Profile",
       user: "User",
+      myEvents: "My events",
     },
     profile: {
     edit: "Edit my profile",
@@ -380,6 +392,15 @@ export const translations = {
       deleteConfirm: "Delete",
       deleted: "Participant deleted",
       noResults: "No results for this search"
+    },
+    myEvents: {
+      title: "My events",
+      subtitle: "Events you are participating in",
+      loginRequired: "Login required",
+      loginRequiredDesc: "Please login to see your events.",
+      eventsFound: "event(s)",
+      noEvents: "You are not participating in any event",
+      noEventsDesc: "Explore available events and register!"
     },
     home: {
       ctaTitle: "Join the community",

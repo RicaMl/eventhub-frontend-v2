@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AppProvider, useApp } from "./context/AppContext.jsx";
 import Navbar from "./components/layout/Navbar.jsx";
@@ -9,12 +9,10 @@ import Home from "./pages/home/Home.jsx";
 import Error404 from "./pages/errors/Error404.jsx"
 import Events from "./pages/events/Events.jsx";
 import EventDetail from "./pages/events/EventDetail.jsx";
+import MyEvents from "./pages/events/MyEvents.jsx";
 import { Login, Register } from "./pages/auth/Auth.jsx";
 import Dashboard from "./pages/dashboard/Dashboard.jsx";
 import './css/index.css'
-
-// LayoutWithNavbar.jsx
-import { Outlet } from "react-router-dom";
 
 export function LayoutWithNavbar() {
   return (
@@ -25,9 +23,37 @@ export function LayoutWithNavbar() {
   );
 }
 
-function AppRoutes() {
-  const { theme } = useApp();
+// Composant pour bloquer TOUTES les routes non-admin
+function AdminBlocker({ children }) {
+  const { user, isAdmin } = useApp();
+  
+  // Si admin connecté, rediriger vers dashboard
+  if (user && isAdmin) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return children;
+}
 
+// Composant pour rediriger les non-admins du dashboard
+function DashboardRedirect() {
+  const { user, isAdmin } = useApp();
+  
+  // Si non connecté → login
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  // Si non-admin → accueil
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+  
+  // Si admin → afficher Dashboard avec ses routes enfants
+  return <Dashboard />;
+}
+
+function AppRoutes() {
   return (
     <>
       <Toaster
@@ -48,40 +74,52 @@ function AppRoutes() {
 
       <BrowserRouter>
         <Routes>
-          {/* Dashboard → réservé aux admins uniquement */}
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute adminOnly>
-                <Dashboard />
-              </ProtectedRoute>
-            } 
-          >
+          {/* Dashboard → UNIQUEMENT pour admins */}
+          <Route path="/dashboard" element={<DashboardRedirect />}>
             <Route path="allevents" element={<DashboardEvents />} />
             <Route path="allparticipants" element={<DashboardParticipants />} />
           </Route>
 
-          {/* Routes avec navbar – tout ce qui est dans ce layout aura la navbar */}
+          {/* Routes publiques / utilisateurs → BLOQUÉES pour les admins */}
           <Route element={<LayoutWithNavbar />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/events" element={<Events />} />
-            {/* Page événement détail → réservée aux utilisateurs connectés */}
+            <Route 
+              path="/" 
+              element={
+                <AdminBlocker>
+                  <Home />
+                </AdminBlocker>
+              } 
+            />
+            <Route 
+              path="/events" 
+              element={
+                <AdminBlocker>
+                  <Events />
+                </AdminBlocker>
+              } 
+            />
             <Route 
               path="/events/:id" 
               element={
-                <ProtectedRoute>
+                <AdminBlocker>
                   <EventDetail />
-                </ProtectedRoute>
+                </AdminBlocker>
+              } 
+            />
+            <Route 
+              path="/my-events" 
+              element={
+                <AdminBlocker>
+                  <MyEvents />
+                </AdminBlocker>
               } 
             />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Route>
 
-          {/* 404 SANS navbar – route catch-all en dernier */}
-          {/* <Route path="*" element={<Error404 />} /> */}
-          <Route path="/404" element={<Error404 />} />
-          <Route path="*" element={<Navigate to="/404" replace />} />
+          {/* 404 */}
+          <Route path="*" element={<Error404 />} />
         </Routes>
       </BrowserRouter>
     </>

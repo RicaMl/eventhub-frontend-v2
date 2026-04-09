@@ -3,7 +3,6 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import Language from "./Language.jsx";
 import Theme from "./Theme.jsx";
 import ProfileModal from "../profile/ProfileModal.jsx";
-import ChangePasswordModal from "../profile/ChangePasswordModal.jsx";
 import { useApp } from "../../context/AppContext";
 import "../../css/Navbar.css";
 
@@ -14,7 +13,6 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -40,16 +38,16 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="navbar">
+      <header className="navbar" role="banner">
         <div className="navbar-inner container">
           {/* Logo */}
-          <Link to="/" className="navbar-logo">
-            <span className="logo-icon">⬡</span>
+          <Link to="/" className="navbar-logo" aria-label="EventHub - Accueil">
+            <span className="logo-icon" aria-hidden="true">⬡</span>
             <span className="logo-text">Event<strong>Hub</strong></span>
           </Link>
 
-          {/* Nav links */}
-          <div className={`navbar-links ${menuOpen ? "open" : ""}`}>
+          {/* Navigation principale */}
+          <nav className={`navbar-links ${menuOpen ? "open" : ""}`} aria-label="Navigation principale">
             <Link to="/" className={`nav-link ${isActive("/") ? "active" : ""}`} onClick={() => setMenuOpen(false)}>
               {t("nav.home")}
             </Link>
@@ -61,29 +59,40 @@ export default function Navbar() {
                 {t("nav.dashboard")}
               </Link>
             )}
-          </div>
+            {user && (
+              <Link to="/my-events" className={`nav-link ${isActive("/my-events") ? "active" : ""}`} onClick={() => setMenuOpen(false)}>
+                {t("nav.myEvents")}
+              </Link>
+            )}
+          </nav>
 
-          {/* Right controls */}
+          {/* Contrôles droits */}
           <div className="navbar-actions">
             <Language />
             <Theme />
 
             {user ? (
               <div className="profile-dropdown">
-                <button className="profile-btn" onClick={() => setProfileOpen((v) => !v)}>
-                  <div className="avatar">
+                <button 
+                  className="profile-btn" 
+                  onClick={() => setProfileOpen((v) => !v)}
+                  aria-expanded={profileOpen}
+                  aria-haspopup="true"
+                  aria-label="Menu utilisateur"
+                >
+                  <div className="avatar" aria-hidden="true">
                     {getInitials()}
                   </div>
                   <span className="profile-name">{getDisplayName()}</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                     <polyline points="6 9 12 15 18 9" />
                   </svg>
                 </button>
 
                 {profileOpen && (
-                  <div className="dropdown-menu animate-fade">
-                    <div className="dropdown-header">
-                      <div className="avatar large">{getInitials()}</div>
+                  <div className="dropdown-menu animate-fade" role="menu" aria-label="Menu utilisateur">
+                    <div className="dropdown-header" role="none">
+                      <div className="avatar large" aria-hidden="true">{getInitials()}</div>
                       <div>
                         <p className="dh-name">{getDisplayName()}</p>
                         <p className="dh-email">{user.email}</p>
@@ -92,21 +101,27 @@ export default function Navbar() {
                         </span>
                       </div>
                     </div>
-                    <div className="dropdown-divider" />
-                    <button className="dropdown-item" onClick={() => { setShowProfileModal(true); setProfileOpen(false); }}>
-                      <span>👤</span> {t("profile.edit")}
+                    <div className="dropdown-divider" role="separator" />
+                    <button 
+                      className="dropdown-item" 
+                      onClick={() => { setShowProfileModal(true); setProfileOpen(false); }}
+                      role="menuitem"
+                    >
+                      <span aria-hidden="true">👤</span> {t("profile.edit")}
                     </button>
-                    <button className="dropdown-item" onClick={() => { setShowPasswordModal(true); setProfileOpen(false); }}>
-                      <span>🔒</span> {t("profile.changePassword")}
-                    </button>
+                    
                     {isAdmin && (
-                      <Link to="/dashboard" className="dropdown-item" onClick={() => setProfileOpen(false)}>
-                        <span>📊</span> {t("nav.dashboard")}
+                      <Link to="/dashboard" className="dropdown-item" onClick={() => setProfileOpen(false)} role="menuitem">
+                        <span aria-hidden="true">📊</span> {t("nav.dashboard")}
                       </Link>
                     )}
-                    <div className="dropdown-divider" />
-                    <button className="dropdown-item danger" onClick={handleLogout}>
-                      <span>🚪</span> {t("nav.logout")}
+                    <div className="dropdown-divider" role="separator" />
+                    <button 
+                      className="dropdown-item danger" 
+                      onClick={handleLogout}
+                      role="menuitem"
+                    >
+                      <span aria-hidden="true">🚪</span> {t("nav.logout")}
                     </button>
                   </div>
                 )}
@@ -123,20 +138,23 @@ export default function Navbar() {
             )}
 
             {/* Mobile hamburger */}
-            <button className="hamburger" onClick={() => setMenuOpen((v) => !v)}>
-              <span className={menuOpen ? "close" : "open"}>
+            <button 
+              className="hamburger" 
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-expanded={menuOpen}
+            >
+              <span className={menuOpen ? "close" : "open"} aria-hidden="true">
                 {menuOpen ? "✕" : "☰"}
               </span>
             </button>
           </div>
         </div>
-      </nav>
+      </header>
 
-      {/* Modal modification profil */}
+      {/* Modals */}
       <ProfileModal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} />
-
-      {/* Modal changement mot de passe */}
-      <ChangePasswordModal isOpen={showPasswordModal} onClose={() => setShowPasswordModal(false)} />
+      
     </>
   );
 }

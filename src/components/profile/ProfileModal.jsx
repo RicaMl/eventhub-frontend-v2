@@ -1,4 +1,3 @@
-// src/components/layout/ProfileModal.jsx
 import { useState } from "react";
 import { useApp } from "../../context/AppContext";
 import { participantService } from "../../services/api";

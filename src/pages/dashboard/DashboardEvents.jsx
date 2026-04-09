@@ -5,6 +5,7 @@ import { eventService } from "../../services/api";
 import EventForm from "../../components/events/EventForm";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import { useDebounce } from "../../hooks/useApi";
+import { truncateText } from "../../utils/string";
 import toast from "react-hot-toast";
 import "../../css/Dashboard.css";
 
@@ -55,12 +56,7 @@ export default function DashboardEvents() {
     });
   }, [allEvents, debouncedEvSearch]);
 
-  // Fonction pour tronquer le texte
-  const truncateText = (text, maxLength = 60) => {
-    if (!text) return "—";
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + "...";
-  };
+  
 
   const openEventParticipants = async (ev) => {
     setShowParticipants(ev);

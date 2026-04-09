@@ -13,7 +13,7 @@ const NAV_ITEMS = [
 ];
 
 export default function DashboardNavBar() {
-  const { t, user, logout } = useApp();  // ← ajout de logout
+  const { t, user, logout } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -38,12 +38,19 @@ export default function DashboardNavBar() {
   };
 
   return (
-    <header className="dash-header">
-      <h1 className="dash-page-title">{pageTitle()}</h1>
-      <div className="header-actions">
+    <header className="dash-header" aria-label="En-tête du tableau de bord">
+      <h1 className="dash-page-title" id="dashboard-title">
+        {pageTitle()}
+      </h1>
+      
+      <div className="header-actions" role="group" aria-label="Actions du tableau de bord">
         <Theme />
         <Language />
-        <button className="btn btn-danger" onClick={handleLogout}>
+        <button 
+          className="btn btn-danger" 
+          onClick={handleLogout}
+          aria-label={t("nav.logout")}
+        >
           {t("nav.logout")}
         </button>
       </div>

@@ -1,4 +1,3 @@
-// src/pages/dashboard/Dashboard.jsx
 import { useState, useEffect, useCallback } from "react";
 import StatCard from "../../components/ui/StatCard";
 import { useApp } from "../../context/AppContext";
@@ -6,7 +5,6 @@ import { statsService } from "../../services/api";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import DashboardSidebar from "../../components/dashboard/DashboardSidebar";
 import DashboardNavBar from "../../components/dashboard/DasshboardNavbar";
-import toast from "react-hot-toast";
 import "../../css/Dashboard.css";
 
 const NAV_ITEMS = [
@@ -20,7 +18,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 🔥 State pour les stats
   const [stats, setStats] = useState(null);
 
   const activeKey = NAV_ITEMS.find((item) => item.path === location.pathname)?.key ?? "overview";

@@ -18,36 +18,34 @@ export default function EventDetail() {
   const [registrationId, setRegistrationId] = useState(null);
 
   const load = () => {
-  setLoading(true);
-  eventService.getOne(id)
-    .then((ev) => {
-      console.log("Événement chargé:", ev);
-      console.log("Participants:", ev.participants);
-      console.log("Utilisateur connecté ID:", user?.id);
-      
-      setEvent(ev);
-      setParticipants(ev.participants || []);
-      
-      // Vérifier si l'utilisateur connecté est dans les participants
-      if (user && ev.participants) {
-        const registered = ev.participants.some(p => p.id === user.id);
-        console.log("Utilisateur trouvé dans participants?", registered);
-        setIsRegistered(registered);
-      }
-      
-      // Si l'API retourne registration_id directement
-      if (ev.registration_id) {
-        console.log("Registration ID trouvé:", ev.registration_id);
-        setIsRegistered(true);
-        setRegistrationId(ev.registration_id);
-      }
-    })
-    .catch((err) => {
-      console.error("Erreur chargement:", err);
-      navigate("/events");
-    })
-    .finally(() => setLoading(false));
-};
+    setLoading(true);
+    eventService.getOne(id)
+      .then((ev) => {
+        console.log("Événement chargé:", ev);
+        console.log("Participants:", ev.participants);
+        console.log("Utilisateur connecté ID:", user?.id);
+        
+        setEvent(ev);
+        setParticipants(ev.participants || []);
+        
+        if (user && ev.participants) {
+          const registered = ev.participants.some(p => p.id === user.id);
+          console.log("Utilisateur trouvé dans participants?", registered);
+          setIsRegistered(registered);
+        }
+        
+        if (ev.registration_id) {
+          console.log("Registration ID trouvé:", ev.registration_id);
+          setIsRegistered(true);
+          setRegistrationId(ev.registration_id);
+        }
+      })
+      .catch((err) => {
+        console.error("Erreur chargement:", err);
+        navigate("/events");
+      })
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => { load(); }, [id, user]);
 
@@ -59,25 +57,21 @@ export default function EventDetail() {
     
     setRegistering(true);
     try {
-      if (isRegistered && registrationId) {
-        // Désinscription
-        await registrationService.unregister(registrationId);
+      if (isRegistered) {
+        await registrationService.unregisterByEvent(event.id);
         toast.success(t("events.unregistered"));
         setIsRegistered(false);
         setRegistrationId(null);
-        load(); // Recharger pour mettre à jour
+        load();
       } else {
-        // Inscription
-        console.log(registrationId);
         const result = await registrationService.register(event.id);
         console.log("Inscription réussie:", result);
         toast.success(t("events.registered"));
         setIsRegistered(true);
         setRegistrationId(result.id);
-        load(); // Recharger pour mettre à jour
+        load();
       }
     } catch (err) {
-      console.error("=== ERREUR DÉTAILLÉE ===");
       console.error("Status:", err.response?.status);
       console.error("Data:", err.response?.data);
       
@@ -88,6 +82,24 @@ export default function EventDetail() {
     } finally {
       setRegistering(false);
     }
+  };
+
+  // Fonction pour obtenir la classe CSS du statut
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "ongoing": return "badge-success";
+      case "completed": return "badge-muted";
+      case "cancelled": return "badge-danger";
+      default: return "badge-accent";
+    }
+  };
+
+  // Fonction pour obtenir le libellé du statut
+  const getStatusLabel = (status) => {
+    if (status === "ongoing") return t("events.ongoing");
+    if (status === "completed") return t("events.completed");
+    if (status === "cancelled") return t("events.cancelled");
+    return t("events.upcoming");
   };
 
   const fmt = (d) => d ? new Date(d).toLocaleString(lang === "fr" ? "fr-FR" : "en-GB", {
@@ -111,15 +123,12 @@ export default function EventDetail() {
 
   return (
     <main className="detail-page container animate-fade">
-      {/* Back */}
       <button className="btn btn-ghost back-btn" onClick={() => navigate(-1)}>
         ← {t("general.back")}
       </button>
 
       <div className="detail-layout">
-        {/* ── Left ── */}
         <div className="detail-main">
-          {/* Hero image */}
           <div className="detail-hero">
             {event.image_url ? (
               <img src={event.image_url} alt={event.title} />
@@ -131,24 +140,21 @@ export default function EventDetail() {
             <div className="detail-hero-gradient" />
           </div>
 
-          {/* Title block */}
           <div className="detail-title-block">
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <span className={`badge ${event.status === "ongoing" ? "badge-success" : event.status === "past" ? "badge-muted" : "badge-accent"}`}>
-                {event.status === "ongoing" ? t("events.ongoing") : event.status === "past" ? t("events.past") : t("events.upcoming")}
+              <span className={`badge ${getStatusClass(event.status)}`}>
+                {getStatusLabel(event.status)}
               </span>
               {(event.price === 0 || event.price === null) && <span className="badge badge-success">{t("events.free")}</span>}
             </div>
             <h1 className="detail-event-title">{event.title}</h1>
           </div>
 
-          {/* Description */}
           <section className="detail-section">
             <h2 className="detail-section-title">{t("events.description")}</h2>
             <p className="detail-description">{event.description || t("events.noDescription")}</p>
           </section>
 
-          {/* Participants list */}
           <section className="detail-section">
             <h2 className="detail-section-title">
               {t("events.participants")} ({participants.length})
@@ -158,10 +164,9 @@ export default function EventDetail() {
                 {participants.map((p) => (
                   <div key={p.id} className="participant-chip">
                     <div className="avatar" style={{ width: 28, height: 28, fontSize: 12 }}>
-                      {p.first_name?.charAt(0)?.toUpperCase()+p.last_name?.charAt(0)?.toUpperCase()|| p.username?.charAt(0)?.toUpperCase() || p.email?.[0]?.toUpperCase() || "?"}
+                      {p.first_name?.charAt(0)?.toUpperCase() + p.last_name?.charAt(0)?.toUpperCase() || p.username?.charAt(0)?.toUpperCase() || p.email?.[0]?.toUpperCase() || "?"}
                     </div>
-                    {/* <span>{p.first_name+" "+p.last_name ||  p.username || p.email}</span> */}
-                     <span>{ p.username || p.email}</span>
+                    <span>{p.username || p.email}</span>
                   </div>
                 ))}
               </div>
@@ -171,10 +176,8 @@ export default function EventDetail() {
           </section>
         </div>
 
-        {/* ── Sidebar ── */}
         <aside className="detail-sidebar">
           <div className="sidebar-card card">
-            {/* Spots */}
             <div className="sidebar-spots">
               <div className="spots-label">
                 <span>{event.registered_count || 0} / {event.max_participants || "∞"} {t("events.participants")}</span>
@@ -198,7 +201,6 @@ export default function EventDetail() {
 
             <div className="sidebar-divider" />
 
-            {/* Info */}
             <div className="sidebar-info">
               <div className="info-row">
                 <span className="info-icon">📅</span>
@@ -220,7 +222,7 @@ export default function EventDetail() {
                 <span className="info-icon">📍</span>
                 <div>
                   <p className="info-label">{t("events.location")}</p>
-                  <p className="info-value">{[event.address, event.city, event.country].filter(Boolean).join(", ") || t("events.noLocation")}</p>
+                  <p className="info-value">{ event.location || t("events.noLocation")}</p>
                 </div>
               </div>
               {event.price !== null && (
@@ -236,8 +238,8 @@ export default function EventDetail() {
 
             <div className="sidebar-divider" />
 
-            {/* CTA */}
-            {event.status !== "past" && event.status !== "completed" && event.status !== "cancelled" && (
+            {/* CTA - événements non terminés uniquement */}
+            {event.status !== "completed" && event.status !== "cancelled" && (
               <button
                 className={`btn ${isRegistered ? "btn-secondary" : isFull ? "btn-ghost" : "btn-primary"} sidebar-cta`}
                 onClick={handleRegister}

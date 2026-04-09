@@ -109,7 +109,7 @@ export default function DashboardParticipants() {
               <th>{t("participants.phone")}</th>
               <th>{t("participants.registeredEvents")}</th>
               <th>{t("participants.events")}</th>
-              <th>{t("participants.actions")}</th>
+              {/* <th>{t("participants.actions")}</th> */}
             </tr>
           </thead>
           <tbody>
@@ -138,7 +138,7 @@ export default function DashboardParticipants() {
                     </button>
                   )}
                 </td>
-                <td>
+                {/* <td>
                   <div className="action-btns">
                     {!isStaff(p) && (
                       <button 
@@ -150,7 +150,7 @@ export default function DashboardParticipants() {
                       </button>
                     )}
                   </div>
-                </td>
+                </td> */}
               </tr>
             ))}
           </tbody>

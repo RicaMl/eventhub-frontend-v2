@@ -5,7 +5,7 @@ import { authService } from "../../services/api";
 import toast from "react-hot-toast";
 import "../../css/Auth.css";
 
-// ─── LOGIN ─────────────────────────────────────────────────────────────────
+//LOGIN 
 export function Login() {
   const { t, login } = useApp();
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ export function Login() {
         navigate(from);
       }
       
-      //navigate("/dashboard");
+    
     } catch (err) {
       
       if (err.response) {
@@ -53,14 +53,8 @@ export function Login() {
         // Le serveur a répondu avec un code (4xx, 5xx)
         //toast.error("Data du serveur :", err.response.data);
         //toast.error("Statut HTTP :", err.response.status);
-        const status = err.response.status; 
+        //const status = err.response.status; 
         const serverData = err.response.data;
-
-        // On transforme l'objet d'erreurs en une chaîne lisible
-        // On prend la première erreur de chaque champ
-        //const errorMessages = Object.entries(serverData)
-        //  .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
-        // .join(" | ");
 
         toast.error(err.response?.data?.detail || "Email ou mot de passe incorrect");
         //toast.error(`Erreur ${status}: ${errorMessages || "Données invalides"}`);
@@ -118,7 +112,7 @@ export function Login() {
   );
 }
 
-// ─── REGISTER ──────────────────────────────────────────────────────────────
+// REGISTER 
 export function Register() {
   const { t, login } = useApp();
   const navigate = useNavigate();
@@ -237,7 +231,7 @@ export function Register() {
   );
 }
 
-// ─── Shared layout ──────────────────────────────────────────────────────────
+// Shared layout after put in component form
 function AuthLayout({ title, subtitle, children }) {
   return (
     <div className="auth-page">

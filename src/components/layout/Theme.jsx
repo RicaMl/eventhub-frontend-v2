@@ -12,12 +12,3 @@ export default function Theme() {
   );
 }
 
-// export default function Theme() {
-//   const { toggleTheme, theme} = useApp();
-
-//   return (
-//      <button className="icon-btn" onClick={toggleTheme} title={theme === "dark" ? t("general.lightMode") : t("general.darkMode")}>
-//             {theme === "dark" ? "☀️" : "🌙"}
-//      </button>
-//   );
-// }

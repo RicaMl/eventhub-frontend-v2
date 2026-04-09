@@ -18,17 +18,20 @@ export default function DashboardSidebar() {
   return (
     <aside className="dash-sidebar">
       <div className="dash-logo">
-        <span className="logo-icon">⬡</span>
+        <span className="logo-icon" aria-hidden="true">⬡</span>
         <span className="logo-text">Event<strong>Hub</strong></span>
       </div>
-      <nav className="dash-nav">
+      
+      {/* Navigation sémantique */}
+      <nav className="dash-nav" aria-label="Dashboard navigation">
         {NAV_ITEMS.map((item) => (
           <button
             key={item.key}
             className={`dash-nav-item ${activeKey === item.key ? "active" : ""}`}
             onClick={() => navigate(item.path)}
+            aria-current={activeKey === item.key ? "page" : undefined}
           >
-            <span className="nav-item-icon">{item.icon}</span>
+            <span className="nav-item-icon" aria-hidden="true">{item.icon}</span>
             <span>
               {item.key === "overview"
                 ? t("nav.dashboard")
@@ -39,15 +42,19 @@ export default function DashboardSidebar() {
           </button>
         ))}
       </nav>
-      <div className="dash-sidebar-footer">
+      
+      {/* Footer avec balises sémantiques */}
+      <footer className="dash-sidebar-footer">
         <div className="dash-user">
-          <div className="avatar">{user?.first_name?.[0] || "A"}</div>
+          <div className="avatar" aria-label={`Avatar de ${user?.first_name || "Admin"}`}>
+            {user?.first_name?.[0] || "A"}
+          </div>
           <div>
             <p className="du-name">{user?.first_name} {user?.last_name}</p>
-            <p className="du-role">Admin</p>
+            <p className="du-role" aria-label="Rôle administrateur">Admin</p>
           </div>
         </div>
-      </div>
+      </footer>
     </aside>
   );
 }
