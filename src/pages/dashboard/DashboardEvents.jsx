@@ -81,10 +81,6 @@ export default function DashboardEvents() {
     setDeleteEvent(null);
   };
 
-  const handleParticipantClick = (participantId) => {
-    navigate(`/dashboard/participants/${participantId}`);
-    setShowParticipants(null);
-  };
   
   const fmtDate = (d) => d ? new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }) : "—";
 
@@ -203,7 +199,6 @@ export default function DashboardEvents() {
                   <div 
                     key={participant.id} 
                     className="participant-item"
-                    onClick={() => handleParticipantClick(participant.id)}
                   >
                     <div className="participant-avatar">
                       {participant.username?.charAt(0)?.toUpperCase() || "?"}

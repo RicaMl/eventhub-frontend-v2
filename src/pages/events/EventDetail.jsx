@@ -253,12 +253,29 @@ export default function EventDetail() {
               </button>
             )}
 
-            <button className="btn btn-ghost sidebar-share" onClick={() => {
-              navigator.clipboard.writeText(window.location.href);
-              toast.success(t("events.linkCopied"));
-            }}>
-              🔗 {t("events.shareEvent")}
-            </button>
+            <button 
+              className="btn btn-ghost sidebar-share" 
+              onClick={() => {
+                const eventUrl = window.location.href;
+                
+                // Méthode moderne (supporte tous les navigateurs récents)
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                  navigator.clipboard.writeText(eventUrl);
+                  toast.success(t("events.linkCopied"));
+                } else {
+                  // Fallback pour les vieux navigateurs
+                  const textarea = document.createElement('textarea');
+                  textarea.value = eventUrl;
+                  document.body.appendChild(textarea);
+                  textarea.select();
+                  document.execCommand('copy');
+                  document.body.removeChild(textarea);
+                  toast.success(t("events.linkCopied"));
+                }
+              }}
+            >
+            🔗 {t("events.shareEvent")}
+          </button>
           </div>
         </aside>
       </div>

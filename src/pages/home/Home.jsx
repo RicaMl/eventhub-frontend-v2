@@ -176,7 +176,7 @@ export default function Home() {
             <span className="logo-icon">⬡</span>
             <span className="logo-text">Event<strong>Hub</strong></span>
           </div>
-          <p className="footer-copy">© 2026 EventHub — Projet Web Programming Master</p>
+          <p className="footer-copy">© 2026 EventHub — Projet Web Programming Master- Rica Mouele - Ho Bao Khanh Nguyen - Alexandre Coudert</p>
         </div>
       </footer>
     </main>
