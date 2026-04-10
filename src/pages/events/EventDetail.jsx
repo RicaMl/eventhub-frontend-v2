@@ -255,24 +255,26 @@ export default function EventDetail() {
 
             <button 
               className="btn btn-ghost sidebar-share" 
-              onClick={() => {
+              onClick={async () => {
+                // Vérifiez si la page actuelle est une 404 (si vous avez un moyen de le détecter)
                 const eventUrl = window.location.href;
                 
-                // Méthode moderne (supporte tous les navigateurs récents)
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                  navigator.clipboard.writeText(eventUrl);
-                  toast.success(t("events.linkCopied"));
-                } else {
-                  // Fallback pour les vieux navigateurs
-                  const textarea = document.createElement('textarea');
-                  textarea.value = eventUrl;
-                  document.body.appendChild(textarea);
-                  textarea.select();
-                  document.execCommand('copy');
-                  document.body.removeChild(textarea);
-                  toast.success(t("events.linkCopied"));
+                // Test simple : est-ce que la page contient une indication d'erreur ?
+                const isErrorPage = document.querySelector('.error-404, [data-status="404"]');
+                
+                if (isErrorPage) {
+                  toast.error("Cette page n'existe pas, impossible de la partager");
+                  return;
                 }
-              }}
+                
+                // Sinon, procédez à la copie
+                try {
+                  await navigator.clipboard.writeText(eventUrl);
+                  toast.success("Lien copié !");
+                } catch (err) {
+                  toast.error("Impossible de copier");
+                }
+}}
             >
             🔗 {t("events.shareEvent")}
           </button>
